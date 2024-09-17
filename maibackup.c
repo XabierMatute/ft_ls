@@ -79,4 +79,27 @@ int main(int argc, char const *argv[])
 	/*if (argc  < 2)
 		return (default_ls());*/
 	return (parse_imput(argc, argv));
+
+
+#include "main.h"
+
+static int parse_imput(int argc, char const *argv[])
+{
+    return (ft_ls(get_paths(argc, argv), get_flags(argc, argv)));
+}
+
+static int default_ls()
+{
+    t_flags flags;
+
+    ft_bzero(&flags, sizeof(t_flags));
+    return (ft_ls(ft_strdup("."), flags));
+}
+
+int main(int argc, char const *argv[])
+{
+    ft_printf("Entrando a ls\n");
+    if (argc  < 2)
+        return (default_ls());
+    return (parse_imput(argc, argv));
 }

@@ -1,0 +1,5 @@
+     are now two copies of lesson 5.3, the original and the file version.
+
+NOTE:  You can also read the output of an external command.  For example,
+       :r !ls  reads the output of the ls command and puts it below the
+       cursor.

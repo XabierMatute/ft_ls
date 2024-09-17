@@ -6,11 +6,11 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/02 14:41:52 by xmatute-          #+#    #+#              #
-#    Updated: 2024/07/02 16:06:45 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/09/17 23:14:24 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-define ASCIIART
+define ASCII_ART
                               
  ,---.  ,--.      ,--.        
 /  .-',-'  '-.    |  | ,---.  
@@ -19,18 +19,21 @@ define ASCIIART
 `--'    `--''----'`--'`----'  
                               
 endef
-export ASCIIART
+export ASCII_ART
 
 NAME := ft_ls
 
 SRC :=	main.c \
+		ft_ls.c \
 
-LIBFT_DIR := libft
+INC_DIR = ./includes
+
+LIBFT_DIR := $(INC_DIR)/libft
 
 LIBFT := $(LIBFT_DIR)/libft.a
 
 HEADER := ft_ls.h
-		
+
 WHITE = \033[0;37m
 RED = \033[0;31m
 CYAN = \033[0;36m
@@ -51,16 +54,16 @@ RM 		:= rm -rf
 all : $(NAME)
 
 $(NAME) : $(OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(MLXF) $(LIBFT) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -I$(INC_DIR) $(LIBFT) -o $(NAME)
 	@echo "$(GREEN)$(NAME) compiled...$(WHITE)"
-	@echo "$(CYAN)$$ASCIIART$(WHITE)"
+	@echo "$(CYAN)$$ASCII_ART$(WHITE)"
 
 $(LIBFT): $(LIBFT_DIR)
 	make -C $(LIBFT_DIR)
 	@echo "$(GREEN)libft compiled...$(WHITE)"
 
-%.o: %.c $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o: %.c
+	$(CC) $(CFLAGS) -I$(INC_DIR) -I$(LIBFT_DIR) -I./includes/libft/ft_printf -c $< -o $@
 
 sani:
 	$(MAKE) EFLAGS='$(SANI)' all
