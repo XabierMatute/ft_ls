@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/02 14:41:52 by xmatute-          #+#    #+#              #
-#    Updated: 2024/09/17 23:14:24 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/09/18 11:36:17 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -84,6 +84,9 @@ commit:
 
 test: all
 	./$(NAME)
+	ls
+	./$(NAME) -la
+	ls -la
 
 clean : 
 		$(RM) $(OBJ)
