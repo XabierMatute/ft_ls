@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 19:45:28 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/09/17 23:36:41 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/09/23 10:33:35 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,5 @@
 #include "libft.h"
 
 int ft_ls(const char *path, const t_flags flags);
-
-void NewFunction(DIR *dir, const t_flags flags);
 
 #endif // MAIN_H

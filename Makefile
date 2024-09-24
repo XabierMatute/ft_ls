@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/02 14:41:52 by xmatute-          #+#    #+#              #
-#    Updated: 2024/09/18 11:36:17 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/09/24 19:25:50 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -87,6 +87,8 @@ test: all
 	ls
 	./$(NAME) -la
 	ls -la
+	./$(NAME) -lR
+	ls -lR
 
 clean : 
 		$(RM) $(OBJ)

@@ -38,9 +38,101 @@ void printflags(t_flags flags) //for debugging purposes
 	#include <grp.h>
 	#include <time.h>
 
+
+
+
+// int putfile_l(struct dirent *file) //beta
+// {
+
+
+	// int putfile_l(struct dirent *file)
+	// int putfile_l(const char *path)
+	// {
+	// 	struct stat file_stat;
+	// 	if (lstat(path, &file_stat) == -1)
+	// 	{
+	// 		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+	// 		return -1;
+	// 	}
+
+	// 	putpermisions(file_stat.st_mode);
+	// 	ft_putchar(' ');
+
+	// 	// Number of hard links
+	// 	printf("%ld", file_stat.st_nlink);
+
+	// 	// Owner name
+	// 	struct passwd *pw = getpwuid(file_stat.st_uid);
+	// 	if (pw != NULL)
+	// 	{
+	// 		printf(" %s", pw->pw_name);
+	// 	}
+	// 	else
+	// 	{
+	// 		printf(" %d", file_stat.st_uid);
+	// 	}
+
+	// 	// Group name
+	// 	struct group *gr = getgrgid(file_stat.st_gid);
+	// 	if (gr != NULL)
+	// 	{
+	// 		printf(" %s", gr->gr_name);
+	// 	}
+	// 	else
+	// 	{
+	// 		printf(" %d", file_stat.st_gid);
+	// 	}
+
+	// 	// File size
+	// 	printf(" %ld", file_stat.st_size);
+
+	// 	// Last modified time
+	// 	char time_buffer[80];
+	// 	struct tm *time_info = localtime(&file_stat.st_mtime);
+	// 	strftime(time_buffer, sizeof(time_buffer), "%b %d %H:%M", time_info);
+	// 	printf(" %s", time_buffer);
+
+	// 	// File name
+	// 	printf(" %s\n", path);
+
+	// 	return 0;
+	// }
+
+// }
+
+// int putfile(const char *path, t_flags flags) //beta
+// {
+// 	if (flags.l)
+// 	{
+// 		return putfile_l(path);
+// 	}
+// 	else
+// 	{
+// 		return printf("%s\n", path);
+// 	}
+// }
+
+// int putfile(
+// {
+// 		if (!flags.a && file->d_name[0] == '.')
+// 			continue;
+// 		char *path = ft_strjoin(dir_path, file->d_name);
+//         putfile(path, flags);
+// 		free(path);
+// }
+
+// void listcontent(const char *dir_path, DIR *dir, const t_flags flags)
+// {
+//     struct dirent *file;
+//     while ((file = readdir(dir)))
+//     {
+// 		putfile(file, path, flags);
+//     }
+// }
+
 void putpermisions(mode_t mode)
 {
-	ft_putchar((S_ISDIR(mode)) ? 'd' : '-');
+	ft_putchar((S_ISDIR(mode))  ? 'd' : '-');
 	ft_putchar((mode & S_IRUSR) ? 'r' : '-');
 	ft_putchar((mode & S_IWUSR) ? 'w' : '-');
 	ft_putchar((mode & S_IXUSR) ? 'x' : '-');
@@ -50,96 +142,162 @@ void putpermisions(mode_t mode)
 	ft_putchar((mode & S_IROTH) ? 'r' : '-');
 	ft_putchar((mode & S_IWOTH) ? 'w' : '-');
 	ft_putchar((mode & S_IXOTH) ? 'x' : '-');
+
 }
 
-
-// int putfile_l(struct dirent *file) //beta
-// {
-
-
-	int putfile_l(struct dirent *file)
-	{
-		struct stat file_stat;
-		if (lstat(file->d_name, &file_stat) == -1)
-		{
-			perror("ft_ls");
-			return -1;
-		}
-
-		putpermisions(file_stat.st_mode);
-		ft_putchar(' ');
-
-		// Number of hard links
-		printf("%ld", file_stat.st_nlink);
-
-		// Owner name
-		struct passwd *pw = getpwuid(file_stat.st_uid);
-		if (pw != NULL)
-		{
-			printf(" %s", pw->pw_name);
-		}
-		else
-		{
-			printf(" %d", file_stat.st_uid);
-		}
-
-		// Group name
-		struct group *gr = getgrgid(file_stat.st_gid);
-		if (gr != NULL)
-		{
-			printf(" %s", gr->gr_name);
-		}
-		else
-		{
-			printf(" %d", file_stat.st_gid);
-		}
-
-		// File size
-		printf(" %ld", file_stat.st_size);
-
-		// Last modified time
-		char time_buffer[80];
-		struct tm *time_info = localtime(&file_stat.st_mtime);
-		strftime(time_buffer, sizeof(time_buffer), "%b %d %H:%M", time_info);
-		printf(" %s", time_buffer);
-
-		// File name
-		printf(" %s\n", file->d_name);
-
-		return 0;
-	}
-
-// }
-
-int putfile(struct dirent *file, t_flags flags) //beta
+int puthardlinks(nlink_t nlink)
 {
-	if (file->d_name[0] == '.' && !flags.a)
+	return ft_printf("%ld", nlink);
+}
+
+int putuser(uid_t uid)
+{
+	struct passwd *pw = getpwuid(uid);
+	if (pw != NULL)
+		return ft_printf("%s", pw->pw_name);
+	return ft_printf("%d", uid);
+}
+
+int putgroup(gid_t gid)
+{
+	struct group *gr = getgrgid(gid);
+	if (gr != NULL)
+		return ft_printf("%s", gr->gr_name);
+	return ft_printf("%d", gid);
+}
+
+int putsize(off_t size)
+{
+	return ft_printf("%i", size);
+}
+
+int putdate(time_t mtime)
+{
+	char *date = ft_substr(ctime(&mtime), 4, 12);
+	int i = ft_printf("%s", date);
+	free(date);
+	return i;
+}
+
+void printfileinfo(struct stat file_stat)
+{
+	putpermisions(file_stat.st_mode);
+	ft_putchar(' ');
+	puthardlinks(file_stat.st_nlink);
+	ft_putchar(' ');
+	putuser(file_stat.st_uid);
+	ft_putchar(' ');
+	putgroup(file_stat.st_gid);
+	ft_putchar(' ');
+	putsize(file_stat.st_size);
+	ft_putchar(' ');
+	putdate(file_stat.st_mtime);
+	ft_putchar(' ');
+
+}
+char *make_absolute_path(const char *dir_path, const char *file_name)
+{
+	char *tmp = ft_strjoin(dir_path, "/");
+	char *path = ft_strjoin(tmp, file_name);
+
+	free(tmp);
+	return path;
+}
+
+void putfile_info(struct dirent *file, const char *dir_path)
+{
+	struct stat file_stat;
+	char *path = make_absolute_path(dir_path, file->d_name);
+	if (lstat(path, &file_stat))
 	{
-		return '.';
+		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		return;
 	}
+	free(path);
+	printfileinfo(file_stat);
+}
+
+void putfile_name(struct dirent *file)
+{
+	printf("%s\n", file->d_name);
+}
+
+void putfile(struct dirent *file, const char *path, const t_flags flags)
+{
+	if (!flags.a && file->d_name[0] == '.')
+		return;
 	if (flags.l)
 	{
-		return putfile_l(file);
+		putfile_info(file, path);
 	}
-	else
+	putfile_name(file);
+}
+
+void listdir(DIR *dir, const char *path, const t_flags flags)
+{
+	struct dirent *file;
+
+	errno = 0;
+	while ((file = readdir(dir)))
 	{
-		return printf("%s\n", file->d_name);
+		putfile(file, path, flags);
+		errno = 0;
+	}
+	if (errno)
+	{
+		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
+		exit(errno);
 	}
 }
 
-void listcontent(DIR *dir, const t_flags flags)
+void putdirectory(struct dirent *file, const char *path, const t_flags flags)
 {
-    struct dirent *file;
-    while ((file = readdir(dir)))
-    {
-        putfile(file, flags);
-    }
+	if (!flags.a && file->d_name[0] == '.')
+		return;
+	char *dir_path = make_absolute_path(path, file->d_name);
+	ft_printf("%s:\n", dir_path);
+	ft_ls(dir_path, flags);
+	free(dir_path);
 }
 
-int ft_ls(const char *path, const t_flags flags)
+int isdir(const char *dir_path, const struct dirent *file)
 {
-	printf("ft_ls: %s\n", path); //for debugging purposes
-	printflags(flags); //for debugging purposes
+	struct stat file_stat;
+	char *path = make_absolute_path(dir_path, file->d_name);
+	if (lstat(path, &file_stat))
+	{
+		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		return 0;
+	}
+	free(path);
+	
+	return S_ISDIR(file_stat.st_mode);
+}
+
+void listRdir(DIR *dir, const char *path, const t_flags flags)
+{
+	struct dirent *file;
+
+	errno = 0;
+	while ((file = readdir(dir)))
+	{
+		if (ft_strncmp(file->d_name, ".", 2) == 0 || ft_strncmp(file->d_name, "..", 3) == 0)
+			continue;
+		if (isdir(path, file))
+		{
+			putdirectory(file, path, flags);
+		}
+		errno = 0;
+	}
+	if (errno)
+	{
+		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
+		exit(errno);
+	}
+}
+
+int recursive_ls(const char *path, const t_flags flags)
+{
 	DIR *dir = opendir(path);
 	if (!dir)
 	{
@@ -147,9 +305,39 @@ int ft_ls(const char *path, const t_flags flags)
 		return (errno);
 	}
 
-    listcontent(dir, flags);
+    listRdir(dir, path, flags);
 
-    return (closedir(dir));
+	if (closedir(dir))
+	{
+		ft_eprintf("ft_ls: cannot close '%s': %s\n", path, strerror(errno));
+		return (errno);
+	}
+    return (0);
+}
+
+int ft_ls(const char *path, const t_flags flags)
+{
+	printf("ft_ls: %s\n", path); //for debugging purposes
+	printflags(flags); //for debugging purposes
+
+	DIR *dir = opendir(path);
+	if (!dir)
+	{
+		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		return (errno);
+	}
+
+    listdir(dir, path, flags);
+
+	if (closedir(dir))
+	{
+		ft_eprintf("ft_ls: cannot close '%s': %s\n", path, strerror(errno));
+		return (errno);
+	}
+
+	if (flags.R)
+		return (recursive_ls(path, flags));
+    return (0);
 }
 
 
