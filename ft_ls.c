@@ -6,6 +6,10 @@
 #include "stdio.h"
 #include <string.h>
 #include "main.h"
+#include <sys/stat.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
 
 void printflags(t_flags flags) //for debugging purposes
 {
@@ -32,103 +36,6 @@ void printflags(t_flags flags) //for debugging purposes
 	}
 	printf("\n");
 }
-
-	#include <sys/stat.h>
-	#include <pwd.h>
-	#include <grp.h>
-	#include <time.h>
-
-
-
-
-// int putfile_l(struct dirent *file) //beta
-// {
-
-
-	// int putfile_l(struct dirent *file)
-	// int putfile_l(const char *path)
-	// {
-	// 	struct stat file_stat;
-	// 	if (lstat(path, &file_stat) == -1)
-	// 	{
-	// 		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
-	// 		return -1;
-	// 	}
-
-	// 	putpermisions(file_stat.st_mode);
-	// 	ft_putchar(' ');
-
-	// 	// Number of hard links
-	// 	printf("%ld", file_stat.st_nlink);
-
-	// 	// Owner name
-	// 	struct passwd *pw = getpwuid(file_stat.st_uid);
-	// 	if (pw != NULL)
-	// 	{
-	// 		printf(" %s", pw->pw_name);
-	// 	}
-	// 	else
-	// 	{
-	// 		printf(" %d", file_stat.st_uid);
-	// 	}
-
-	// 	// Group name
-	// 	struct group *gr = getgrgid(file_stat.st_gid);
-	// 	if (gr != NULL)
-	// 	{
-	// 		printf(" %s", gr->gr_name);
-	// 	}
-	// 	else
-	// 	{
-	// 		printf(" %d", file_stat.st_gid);
-	// 	}
-
-	// 	// File size
-	// 	printf(" %ld", file_stat.st_size);
-
-	// 	// Last modified time
-	// 	char time_buffer[80];
-	// 	struct tm *time_info = localtime(&file_stat.st_mtime);
-	// 	strftime(time_buffer, sizeof(time_buffer), "%b %d %H:%M", time_info);
-	// 	printf(" %s", time_buffer);
-
-	// 	// File name
-	// 	printf(" %s\n", path);
-
-	// 	return 0;
-	// }
-
-// }
-
-// int putfile(const char *path, t_flags flags) //beta
-// {
-// 	if (flags.l)
-// 	{
-// 		return putfile_l(path);
-// 	}
-// 	else
-// 	{
-// 		return printf("%s\n", path);
-// 	}
-// }
-
-// int putfile(
-// {
-// 		if (!flags.a && file->d_name[0] == '.')
-// 			continue;
-// 		char *path = ft_strjoin(dir_path, file->d_name);
-//         putfile(path, flags);
-// 		free(path);
-// }
-
-// void listcontent(const char *dir_path, DIR *dir, const t_flags flags)
-// {
-//     struct dirent *file;
-//     while ((file = readdir(dir)))
-//     {
-// 		putfile(file, path, flags);
-//     }
-// }
 
 void putpermisions(mode_t mode)
 {
