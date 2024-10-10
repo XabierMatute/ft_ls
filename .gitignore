@@ -56,3 +56,8 @@ dkms.conf
 
 # Executables
 ft_ls
+
+.testdir/
+archivo.txt
+gpc.c
+printfileinfo.c

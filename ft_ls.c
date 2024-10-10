@@ -11,30 +11,25 @@
 #include <grp.h>
 #include <time.h>
 
-void printflags(t_flags flags) //for debugging purposes
+void save_closedir(const char *path, DIR *dir)
 {
-	printf("flags: -");
-	if (flags.l)
+	if (closedir(dir))
 	{
-		printf("l");
+		ft_eprintf("ft_ls: cannot close '%s': %s\n", path, strerror(errno));
+		exit(errno);
 	}
-	if (flags.R)
+}
+
+void	*save_calloc(size_t nmemb, size_t size)
+{
+	void *mem;
+
+	if (!(mem = ft_calloc(nmemb, size)))
 	{
-		printf("R");
+		ft_eprintf("ft_ls: cannot allocate memory for %i * %i: %s\n", nmemb, size, strerror(errno));
+		exit(errno);
 	}
-	if (flags.a)
-	{
-		printf("a");
-	}
-	if (flags.r)
-	{
-		printf("r");
-	}
-	if (flags.t)
-	{
-		printf("t");
-	}
-	printf("\n");
+	return (mem);
 }
 
 void putpermisions(mode_t mode)
@@ -105,16 +100,25 @@ void printfileinfo(struct stat file_stat)
 char *make_absolute_path(const char *dir_path, const char *file_name)
 {
 	char *tmp = ft_strjoin(dir_path, "/");
+	if (!tmp)
+	{
+		ft_eprintf("ft_ls: cannot allocate memory for %s/%s: %s\n", dir_path, file_name, strerror(errno));
+		exit(errno);
+	}	
 	char *path = ft_strjoin(tmp, file_name);
-
+	if (!path)
+	{
+		ft_eprintf("ft_ls: cannot allocate memory for %s/%s: %s\n", dir_path, file_name, strerror(errno));
+		exit(errno);
+	}
 	free(tmp);
 	return path;
 }
 
-void putfile_info(struct dirent *file, const char *dir_path)
+void putfile_info(char *file, const char *dir_path)
 {
 	struct stat file_stat;
-	char *path = make_absolute_path(dir_path, file->d_name);
+	char *path = make_absolute_path(dir_path, file);
 	if (lstat(path, &file_stat))
 	{
 		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
@@ -124,53 +128,151 @@ void putfile_info(struct dirent *file, const char *dir_path)
 	printfileinfo(file_stat);
 }
 
-void putfile_name(struct dirent *file)
+void putfile_name(char *file)
 {
-	printf("%s\n", file->d_name);
+	printf("%s\n", file);
 }
 
-void putfile(struct dirent *file, const char *path, const t_flags flags)
+void putfile(char *file, const char *path, const t_flags flags)
 {
-	if (!flags.a && file->d_name[0] == '.')
+	if (!flags.a && file[0] == '.')
 		return;
 	if (flags.l)
-	{
 		putfile_info(file, path);
-	}
 	putfile_name(file);
 }
 
-void listdir(DIR *dir, const char *path, const t_flags flags)
+size_t	count_files(const char *path, const t_flags flags)
 {
-	struct dirent *file;
+	size_t	i = 0;
+	DIR		*dir = opendir(path);
+	struct dirent	*file;
 
+	if (!dir)
+	{
+		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		return(0);
+	}
 	errno = 0;
 	while ((file = readdir(dir)))
 	{
-		putfile(file, path, flags);
 		errno = 0;
+		if (file->d_name[0] != '.' || flags.a)
+			i++;
 	}
+	save_closedir(path, dir);
 	if (errno)
 	{
 		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
 		exit(errno);
 	}
+	return (i);
 }
 
-void putdirectory(struct dirent *file, const char *path, const t_flags flags)
+char **get_files(const char *path, const t_flags flags)
 {
-	if (!flags.a && file->d_name[0] == '.')
+	DIR				*dir = opendir(path);
+	struct dirent 	*file = NULL;
+	char			**files = save_calloc(count_files(path, flags) + 1, sizeof(char *));
+	size_t			i = 0;
+
+	if (errno)
+		return (NULL);
+	if (!dir)
+	{
+		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		return(NULL);
+	}
+	errno = 0;
+	while ((file = readdir(dir)))
+	{
+		errno = 0;
+		if (file->d_name[0] != '.' || flags.a)
+		{
+			files[i] = ft_strdup(file->d_name);
+			i++;
+		}
+	}
+	save_closedir(path, dir);
+	if (errno)
+	{
+		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
+		free(files);
+		exit(errno);
+	}
+	files[i] = NULL;
+	return (files);
+}
+
+char **listfiles_r(char **files, const char *path, t_flags flags)
+{
+	size_t i = 0;
+
+	while (files[i])
+		i++;
+	while (i)
+		putfile(files[--i], path, flags);
+	return (files);
+}
+
+size_t	get_blocks(char *file, const char *dir_path)
+{
+	struct stat file_stat;
+	char *path = make_absolute_path(dir_path, file);
+	if (lstat(path, &file_stat))
+	{
+		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		free(path);
+		return 0;
+	}
+	free(path);
+	return (file_stat.st_blocks / 2);
+}
+
+size_t	get_blocksnum(char **files, const char *path)
+{
+	size_t blocks = 0;
+
+	while (*files)
+	{
+		blocks += get_blocks(*files, path);
+		files++;
+	}
+	
+	return (blocks);
+}
+
+char **listfiles(char **files, const char *path, t_flags flags)
+{
+	size_t i = 0;
+
+	if (flags.l)
+		ft_printf("total %i\n", get_blocksnum(files, path));
+	if (flags.r)
+		return (listfiles_r(files, path, flags));
+	while (files[i])
+	{
+		putfile(files[i], path, flags);
+		i++;
+	}
+	return (files);
+}
+
+
+void putdirectory(char *file, const char *path, const t_flags flags)
+{
+	if (!flags.a && file[0] == '.')
 		return;
-	char *dir_path = make_absolute_path(path, file->d_name);
-	ft_printf("%s:\n", dir_path);
+	char *dir_path = make_absolute_path(path, file);
+	ft_putchar('\n');
 	ft_ls(dir_path, flags);
 	free(dir_path);
 }
 
-int isdir(const char *dir_path, const struct dirent *file)
+int isdir(const char *dir_path, const char *file)
 {
 	struct stat file_stat;
-	char *path = make_absolute_path(dir_path, file->d_name);
+	char *path = make_absolute_path(dir_path, file);
 	if (lstat(path, &file_stat))
 	{
 		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
@@ -181,69 +283,93 @@ int isdir(const char *dir_path, const struct dirent *file)
 	return S_ISDIR(file_stat.st_mode);
 }
 
-void listRdir(DIR *dir, const char *path, const t_flags flags)
+void listRfiles(char **files, const char *path, const t_flags flags)
 {
-	struct dirent *file;
+	size_t i = 0;
 
-	errno = 0;
-	while ((file = readdir(dir)))
+	while (files[i])
 	{
-		if (ft_strncmp(file->d_name, ".", 2) == 0 || ft_strncmp(file->d_name, "..", 3) == 0)
-			continue;
-		if (isdir(path, file))
-		{
-			putdirectory(file, path, flags);
-		}
-		errno = 0;
-	}
-	if (errno)
-	{
-		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
-		exit(errno);
+		if (isdir(path, files[i]) && ft_strncmp(files[i], ".", 2) && ft_strncmp(files[i], "..", 3))
+			putdirectory(files[i], path, flags);
+		i++;
 	}
 }
 
-int recursive_ls(const char *path, const t_flags flags)
+time_t	get_mtime(const char *file, const char *dir_path)
 {
-	DIR *dir = opendir(path);
-	if (!dir)
+	struct stat file_stat;
+	char *path = make_absolute_path(dir_path, file);
+	if (lstat(path, &file_stat))
 	{
 		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
-		return (errno);
+		return 0;
 	}
+	free(path);
+	
+	return (file_stat.st_mtime);
+}
 
-    listRdir(dir, path, flags);
+char **sort_files_a(char **files)
+{
+	size_t	i = 0;
 
-	if (closedir(dir))
+	while (files[i])
 	{
-		ft_eprintf("ft_ls: cannot close '%s': %s\n", path, strerror(errno));
-		return (errno);
+		size_t	j = 0;
+		while (files[j + 1 + i])
+		{
+			if (ft_strncmp(files[j], files[j + 1], strlen(files[j]) + 1) > 0)
+				ft_swap_p((void *)&files[j], (void *)&files[j + 1]);
+			j++;
+		}
+		i++;
 	}
-    return (0);
+	return(files);
+}
+
+char **sort_files_t(char **files, const char *path)
+{
+	size_t	i = 0;
+
+	while (files[i])
+	{
+		size_t	j = 0;
+		while (files[j + 1 + i])
+		{
+			if (get_mtime(files[j], path) < get_mtime(files[j + 1], path))
+				ft_swap_p((void *)&files[j], (void *)&files[j + 1]);
+			j++;
+		}
+		i++;
+	}
+	return(files);
+}
+
+char **sort_files(char **files, const char *path, const t_flags flags)
+{
+	files = sort_files_a(files);
+	if (flags.t)
+		return (sort_files_t(files, path));
+	return (files);
 }
 
 int ft_ls(const char *path, const t_flags flags)
 {
-	printf("ft_ls: %s\n", path); //for debugging purposes
-	printflags(flags); //for debugging purposes
+	errno = 0;
+	char **files = get_files(path, flags);
 
-	DIR *dir = opendir(path);
-	if (!dir)
-	{
-		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+	if (!files || errno)
 		return (errno);
-	}
-
-    listdir(dir, path, flags);
-
-	if (closedir(dir))
-	{
-		ft_eprintf("ft_ls: cannot close '%s': %s\n", path, strerror(errno));
-		return (errno);
-	}
+	
+	files = sort_files(files, path, flags);
+	if (flags.R)
+		ft_printf("%s:\n", path);
+    listfiles(files, path, flags);
 
 	if (flags.R)
-		return (recursive_ls(path, flags));
+		listRfiles(files, path, flags);
+
+	free2((void **)files);
     return (0);
 }
 

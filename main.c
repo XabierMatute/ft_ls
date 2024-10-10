@@ -27,7 +27,7 @@ t_flags get_flags(int argc, char const *argv[])
 					flags.a = 1;
 					break;
 				case 'r' :
-					flags.a = 1;
+					flags.r = 1;
 					break;
 				case 't' :
 					flags.t = 1;
