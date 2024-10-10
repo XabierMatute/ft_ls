@@ -6,18 +6,11 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:36:33 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/10 11:36:41 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/10/10 11:42:43 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include "stdio.h"
-#include <string.h>
-#include "main.h"
-#include <sys/stat.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
 
 void save_closedir(const char *path, DIR *dir)
 {
@@ -138,7 +131,7 @@ void putfile_info(char *file, const char *dir_path)
 
 void putfile_name(char *file)
 {
-	printf("%s\n", file);
+	ft_printf("%s\n", file);
 }
 
 void putfile(char *file, const char *path, const t_flags flags)
