@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/10 11:36:45 by xmatute-          #+#    #+#             */
+/*   Updated: 2024/10/10 11:37:11 by xmatute-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "main.h"
 
 t_flags get_flags(int argc, char const *argv[])
@@ -33,7 +45,6 @@ t_flags get_flags(int argc, char const *argv[])
 					flags.t = 1;
 					break;
 				default:
-					//ureconiced flag
 					break;
 				}
 				j++;
