@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:36:33 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/10 11:42:43 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/10/14 12:21:07 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,23 @@ void	*save_calloc(size_t nmemb, size_t size)
 	return (mem);
 }
 
+char get_filetypechar(mode_t mode)
+{
+	switch (mode & S_IFMT) {
+		case S_IFBLK:  return 'b';  // block device
+		case S_IFCHR:  return 'c';  // character device
+		case S_IFDIR:  return 'd';  // directory
+		case S_IFIFO:  return 'p';  // FIFO/pipe
+		case S_IFLNK:  return 'l';  // symlink
+		case S_IFREG:  return '-';  // regular file
+		case S_IFSOCK: return 's';  // socket
+		default:       return '?';  // unknown
+	}
+}
+
 void putpermisions(mode_t mode)
 {
-	ft_putchar((S_ISDIR(mode))  ? 'd' : '-');
+	ft_putchar(get_filetypechar(mode));
 	ft_putchar((mode & S_IRUSR) ? 'r' : '-');
 	ft_putchar((mode & S_IWUSR) ? 'w' : '-');
 	ft_putchar((mode & S_IXUSR) ? 'x' : '-');
@@ -45,7 +59,6 @@ void putpermisions(mode_t mode)
 	ft_putchar((mode & S_IROTH) ? 'r' : '-');
 	ft_putchar((mode & S_IWOTH) ? 'w' : '-');
 	ft_putchar((mode & S_IXOTH) ? 'x' : '-');
-
 }
 
 int puthardlinks(nlink_t nlink)
@@ -131,7 +144,23 @@ void putfile_info(char *file, const char *dir_path)
 
 void putfile_name(char *file)
 {
-	ft_printf("%s\n", file);
+	ft_printf("%s", file);
+}
+
+void putsymlink(char const *file, char const *dir_path)
+{
+	char buf[1024];
+    ssize_t len;
+	char *path = make_absolute_path(dir_path, file);
+
+    len = readlink(path, buf, sizeof(buf)-1);
+
+	free(path);
+
+    if (len != -1) {
+        buf[len] = '\0';
+        ft_printf(" -> %s", buf);
+    }
 }
 
 void putfile(char *file, const char *path, const t_flags flags)
@@ -141,6 +170,9 @@ void putfile(char *file, const char *path, const t_flags flags)
 	if (flags.l)
 		putfile_info(file, path);
 	putfile_name(file);
+	if (flags.l)
+		putsymlink(file, path);
+	ft_putchar('\n');
 }
 
 size_t	count_files(const char *path, const t_flags flags)
