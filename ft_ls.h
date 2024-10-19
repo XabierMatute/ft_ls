@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:41:00 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/10 11:45:07 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/10/14 15:40:49 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-int ft_ls(const char *path, const t_flags flags);
+int ft_ls(char **path, const t_flags flags);
+int list_directory(char *path, const t_flags flags);
 
 #endif //FT_LS_H

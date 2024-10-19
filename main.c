@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:36:45 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/10 11:37:11 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/10/14 15:42:15 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ t_flags get_flags(int argc, char const *argv[])
 	{
 		if (argv[i][0] == '-')
 		{
-			int j = 0;
+			int j = 1;
 
 			while (argv[i][j])
 			{
@@ -45,6 +45,14 @@ t_flags get_flags(int argc, char const *argv[])
 					flags.t = 1;
 					break;
 				default:
+					ft_eprintf("ls: invalid option -- '%c'\n", argv[i][j]);
+					ft_eprintf("Available options:\n");
+					ft_eprintf("-l: Use a long listing format\n");
+					ft_eprintf("-R: Recursive listing of subdirectories\n");
+					ft_eprintf("-a: Include entries which start with .\n");
+					ft_eprintf("-r: Reverse the order while sorting\n");
+					ft_eprintf("-t: Sort by modification time, newest first\n");
+					exit(2);
 					break;
 				}
 				j++;
@@ -55,24 +63,35 @@ t_flags get_flags(int argc, char const *argv[])
 	return (flags);
 }
 
+int	count_paths(int argc, char const *argv[])
+{
+	int	c = 0;
+
+	while (--argc)
+		if (argv[argc][0] != '-')
+			c++;
+	return (c);
+}
+
+char **get_paths(int argc, char const *argv[])
+{
+	char **paths = ft_calloc(count_paths(argc, argv) + 1, sizeof(char *));
+	int 	i = 0;
+
+	while (--argc)
+		if (argv[argc][0] != '-')
+			paths[i++] = ft_strdup(argv[argc]);
+	return(paths);
+}
+
 static int parse_imput(int argc, char const *argv[])
 {
 	const t_flags	flags = get_flags(argc, argv);
-	int				i = 1;
-	int				ee = -42;
-
-	while (i < argc)
-	{
-		if (argv[i][0] != '-')
-		{
-			ee = ft_ls(argv[i], flags);
-			if (ee != 0)
-				return (ee);
-		}
-		i++;
-	}
-	if (ee == -42)
-		return (ft_ls(".", flags));
+	
+	char		**paths = get_paths(argc, argv);
+	
+	ft_ls(paths, flags);
+	free2((void **)paths);
 	return (0);
 }
 

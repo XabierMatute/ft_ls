@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:36:33 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/14 12:21:07 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/10/18 20:08:41 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void putpermisions(mode_t mode)
 
 int puthardlinks(nlink_t nlink)
 {
-	return ft_printf("%ld", nlink);
+	return ft_printf("%d", nlink);
 }
 
 int putuser(uid_t uid)
@@ -98,21 +98,24 @@ int putdate(time_t mtime)
 void printfileinfo(struct stat file_stat)
 {
 	putpermisions(file_stat.st_mode);
-	ft_putchar(' ');
+	ft_putchar('\t');
 	puthardlinks(file_stat.st_nlink);
-	ft_putchar(' ');
+	ft_putchar('\t');
 	putuser(file_stat.st_uid);
-	ft_putchar(' ');
+	ft_putchar('\t');
 	putgroup(file_stat.st_gid);
-	ft_putchar(' ');
+	ft_putchar('\t');
 	putsize(file_stat.st_size);
-	ft_putchar(' ');
+	ft_putchar('\t');
 	putdate(file_stat.st_mtime);
-	ft_putchar(' ');
-
+	ft_putchar('\t');
 }
+
 char *make_absolute_path(const char *dir_path, const char *file_name)
 {
+	if (!dir_path || !dir_path[0])
+		return  (ft_strdup(file_name));
+	
 	char *tmp = ft_strjoin(dir_path, "/");
 	if (!tmp)
 	{
@@ -184,7 +187,7 @@ size_t	count_files(const char *path, const t_flags flags)
 	if (!dir)
 	{
 		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
-		return(0);
+		return (0);
 	}
 	errno = 0;
 	while ((file = readdir(dir)))
@@ -195,10 +198,7 @@ size_t	count_files(const char *path, const t_flags flags)
 	}
 	save_closedir(path, dir);
 	if (errno)
-	{
-		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
-		exit(errno);
-	}
+		ft_eprintf("ft_ls: error reading '%s': %s\n", path, strerror(errno));
 	return (i);
 }
 
@@ -221,18 +221,11 @@ char **get_files(const char *path, const t_flags flags)
 	{
 		errno = 0;
 		if (file->d_name[0] != '.' || flags.a)
-		{
-			files[i] = ft_strdup(file->d_name);
-			i++;
-		}
+			files[i++] = ft_strdup(file->d_name);
 	}
 	save_closedir(path, dir);
 	if (errno)
-	{
-		ft_eprintf("ft_ls: cannot read '%s': %s\n", path, strerror(errno));
-		free(files);
-		exit(errno);
-	}
+		ft_eprintf("ft_ls: error reading '%s': %s\n", path, strerror(errno));
 	files[i] = NULL;
 	return (files);
 }
@@ -284,10 +277,7 @@ char **listfiles(char **files, const char *path, t_flags flags)
 	if (flags.r)
 		return (listfiles_r(files, path, flags));
 	while (files[i])
-	{
-		putfile(files[i], path, flags);
-		i++;
-	}
+		putfile(files[i++], path, flags);
 	return (files);
 }
 
@@ -298,7 +288,7 @@ void putdirectory(char *file, const char *path, const t_flags flags)
 		return;
 	char *dir_path = make_absolute_path(path, file);
 	ft_putchar('\n');
-	ft_ls(dir_path, flags);
+	list_directory(dir_path, flags);
 	free(dir_path);
 }
 
@@ -316,10 +306,28 @@ int isdir(const char *dir_path, const char *file)
 	return S_ISDIR(file_stat.st_mode);
 }
 
+void listRfiles_r(char **files, const char *path, const t_flags flags)
+{
+	size_t i = 0;
+
+	while (files[i])
+		i++;
+	while (i)
+	{
+		if (isdir(path, files[--i]) && ft_strncmp(files[i], ".", 2) && ft_strncmp(files[i], "..", 3))
+			putdirectory(files[i], path, flags);
+	}
+}
+
 void listRfiles(char **files, const char *path, const t_flags flags)
 {
 	size_t i = 0;
 
+	if (flags.r)
+	{
+		listRfiles_r(files, path, flags);
+		return;
+	}
 	while (files[i])
 	{
 		if (isdir(path, files[i]) && ft_strncmp(files[i], ".", 2) && ft_strncmp(files[i], "..", 3))
@@ -360,7 +368,7 @@ char **sort_files_a(char **files)
 	return(files);
 }
 
-char **sort_files_t(char **files, const char *path)
+char **sort_files_t(char **files, char *path)
 {
 	size_t	i = 0;
 
@@ -378,7 +386,7 @@ char **sort_files_t(char **files, const char *path)
 	return(files);
 }
 
-char **sort_files(char **files, const char *path, const t_flags flags)
+char **sort_files(char **files, char *path, const t_flags flags)
 {
 	files = sort_files_a(files);
 	if (flags.t)
@@ -386,7 +394,7 @@ char **sort_files(char **files, const char *path, const t_flags flags)
 	return (files);
 }
 
-int ft_ls(const char *path, const t_flags flags)
+int list_directory(char *path, const t_flags flags)
 {
 	errno = 0;
 	char **files = get_files(path, flags);
@@ -406,4 +414,76 @@ int ft_ls(const char *path, const t_flags flags)
     return (0);
 }
 
+void list_file(char *file, const t_flags flags)
+{
+	putfile(file, "", flags);
+}
 
+int list_directories_r(char **dirs, const t_flags flags)
+{
+	size_t	i = 0;
+
+	while (dirs[i])
+		i++;
+	while (i)
+	{
+		if (isdir("", dirs[--i]))
+		{
+			ft_printf("%s:\n", *dirs);
+			list_directory(*dirs, flags);
+			if (dirs[1])
+				ft_putchar('\n');	
+		}
+		else
+			list_file(dirs[i], flags);
+	}
+	return (0);
+}
+
+int list_only_directories(char **dirs, const t_flags flags)
+{
+	while (*dirs)
+	{
+		if (isdir("", *dirs))
+		{
+			ft_printf("%s:\n", *dirs);
+			list_directory(*dirs, flags);
+			if (dirs[1])
+				ft_putchar('\n');	
+		}
+		dirs++;
+	}
+	return (0);
+}
+
+int list_files(char **dirs, const t_flags flags)
+{
+	while (*dirs)
+	{
+		if (!isdir("", *dirs))
+			list_file(*dirs, flags);
+		dirs++;
+	}
+	return (0);
+}
+
+int list_directories(char **dirs, const t_flags flags)
+{
+	dirs = sort_files(dirs, "", flags);
+	if (flags.r)
+		return (list_directories_r(dirs, flags));
+	
+	list_files(dirs, flags);
+	ft_putchar('\n');
+	list_only_directories(dirs, flags);
+	return (0);
+}
+
+int ft_ls(char **paths, const t_flags flags)
+{
+	if (ft_parrlen((void **)paths) == 0)
+		return(list_directory(".", flags));
+	if (ft_parrlen((void **)paths) == 1)
+		return(list_directory(paths[0], flags));
+	return(list_directories(paths, flags));
+}
