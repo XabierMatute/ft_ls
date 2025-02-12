@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:36:45 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/12/05 14:42:01 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 14:02:20 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,12 @@ static char **get_paths(int argc, char const *argv[])
 	char **paths = ft_calloc(count_paths(argc, argv) + 1, sizeof(char *));
 	int 	i = 0;
 
+	if (!paths)
+	{
+		ft_eprintf("Memory Error: could not allocate %i bits\n", count_paths(argc, argv) + 1, sizeof(char *));	
+		perror("Malloc: ");
+		exit(errno);
+	}	
 	while (--argc)
 		if (!is_flag_input(argv[argc]))
 			paths[i++] = ft_strdup(argv[argc]);
@@ -100,7 +106,7 @@ static int parse_imput(int argc, char const *argv[])
 {
 	const t_flags	flags = get_flags(argc, argv);
 	char			**paths = get_paths(argc, argv);
-	
+
 	ft_ls(paths, flags);
 	free2((void **)paths);
 	return (0);

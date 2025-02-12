@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 19:45:28 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/14 15:42:27 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 14:01:57 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include "t_flags.h"
 #include "libft.h"
+#include <errno.h>
+#include <stdio.h>
 
 int ft_ls(char **path, const t_flags flags);
 
