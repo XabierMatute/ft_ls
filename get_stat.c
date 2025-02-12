@@ -1,22 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   isdir.c                                            :+:      :+:    :+:   */
+/*   get_stat.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/21 17:31:32 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/12 19:40:27 by xmatute-         ###   ########.fr       */
+/*   Created: 2025/02/12 19:06:13 by xmatute-          #+#    #+#             */
+/*   Updated: 2025/02/12 19:23:45 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-int isdir(const char *path, char *dir_path)
+int get_stat(const char *path, char *dir_path, struct stat *stat)
 {
-    struct stat file_stat;
+    char *absolute_path = make_absolute_path(dir_path, path);
+    int r = lstat(absolute_path, stat);
 
-    if (get_stat(path, dir_path, &file_stat))
-        return (0);
-    return (S_ISDIR(file_stat.st_mode));
+    if (r)
+        ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+    free(absolute_path);
+    return r;
 }
+

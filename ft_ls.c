@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:36:33 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/12 18:19:52 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 18:46:13 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,6 @@ int ft_ls(char const **paths, const t_flags flags)
 	if (ft_parrlen((void **)paths) == 0)
 		return (default_ls(flags));
 	
-	list_paths((char**) paths, flags);
+	list_paths((char**) paths, flags, "");
 	return (0);
 }

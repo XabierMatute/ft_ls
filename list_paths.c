@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 17:10:23 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/12 18:22:36 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 20:57:34 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,11 @@
 // 	}
 // }
 
-int list_paths(char **paths, const t_flags flags)
+int list_paths(char **paths, const t_flags flags, char *dir_path)
 {
-	paths = sort_paths(paths, flags);
-	list_only_files(paths, flags);
-	list_directories(paths, flags);
+	paths = sort_paths(paths, flags, dir_path);
+	list_only_files(paths, flags, dir_path);
+	ft_putchar('\n');
+	list_directories(paths, flags, dir_path);
 	return (0);
 }

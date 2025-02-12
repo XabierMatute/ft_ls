@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 18:11:44 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/12 18:27:07 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 19:25:37 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,15 +98,12 @@ void printfileinfo(struct stat file_stat)
 	ft_putchar('\t');
 }
 
-void putfile_info(char const *path)
+void putfile_info(char const *path, char *dir_path)
 {
 	struct stat file_stat;
 
-	if (lstat(path, &file_stat))
-	{
-		ft_eprintf("ft_ls: cannot access info of '%s': %s\n", path, strerror(errno));
+	if (get_stat(path, dir_path, &file_stat))
 		return;
-	}
 	printfileinfo(file_stat);
 }
 
@@ -115,12 +112,14 @@ void putfile_name(char const *file)
 	ft_printf("%s", file);
 }
 
-void putsymlink(char const *path)
+void putsymlink(char const *path, char *dir_path)
 {
 	char buf[1024];
     ssize_t len;
+	char *absolute_path = make_absolute_path(dir_path, path);
 
-    len = readlink(path, buf, sizeof(buf)-1);
+    len = readlink(absolute_path, buf, sizeof(buf)-1);
+	free(absolute_path);
     
     if (len != -1) {
         buf[len] = '\0';
@@ -128,12 +127,12 @@ void putsymlink(char const *path)
     }
 }
 
-void put_file(const char *file, const t_flags flags)
+void put_file(const char *file, const t_flags flags, char *dir_path)
 {
     if (flags.l)
-        putfile_info(file);
+        putfile_info(file, dir_path);
     putfile_name(file);
     if (flags.l)
-        putsymlink(file);
+        putsymlink(file, dir_path);
     ft_putchar('\n');
 }
