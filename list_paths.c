@@ -6,12 +6,12 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 17:10:23 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/12/05 15:01:05 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 18:22:36 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include <stdio.h>
+// #include <stdio.h>
 
 // void print_paths(char **paths)
 // {

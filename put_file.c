@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 18:11:44 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/12 13:28:09 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 18:27:07 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int putdate(time_t mtime)
 	return i;
 }
 
-int put_disps(dev_t rdev)
+int putdisps(dev_t rdev)
 {
 	return (ft_printf("%i, %i", major(rdev), minor(rdev)));
 }
@@ -90,7 +90,7 @@ void printfileinfo(struct stat file_stat)
 	putgroup(file_stat.st_gid);
 	ft_putchar('\t');
 	if (((file_stat.st_mode & S_IFMT) == S_IFCHR) || ((file_stat.st_mode & S_IFMT) == S_IFBLK))
-		put_disps(file_stat.st_rdev);
+		putdisps(file_stat.st_rdev);
 	else
 		putsize(file_stat.st_size);
 	ft_putchar('\t');
@@ -104,7 +104,7 @@ void putfile_info(char const *path)
 
 	if (lstat(path, &file_stat))
 	{
-		ft_eprintf("ft_ls: cannot access '%s': %s\n", path, strerror(errno));
+		ft_eprintf("ft_ls: cannot access info of '%s': %s\n", path, strerror(errno));
 		return;
 	}
 	printfileinfo(file_stat);
