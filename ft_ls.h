@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:41:00 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/12/05 14:29:30 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 13:25:15 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/sysmacros.h>
 
 int 	ft_ls(char const**path, const t_flags flags);
 char **purge_paths(char const **paths);

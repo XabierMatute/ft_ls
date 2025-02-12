@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 18:11:44 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/21 18:19:03 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/12 13:28:09 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,11 @@ int putdate(time_t mtime)
 	return i;
 }
 
+int put_disps(dev_t rdev)
+{
+	return (ft_printf("%i, %i", major(rdev), minor(rdev)));
+}
+
 void printfileinfo(struct stat file_stat)
 {
 	putpermisions(file_stat.st_mode);
@@ -84,7 +89,10 @@ void printfileinfo(struct stat file_stat)
 	ft_putchar('\t');
 	putgroup(file_stat.st_gid);
 	ft_putchar('\t');
-	putsize(file_stat.st_size);
+	if (((file_stat.st_mode & S_IFMT) == S_IFCHR) || ((file_stat.st_mode & S_IFMT) == S_IFBLK))
+		put_disps(file_stat.st_rdev);
+	else
+		putsize(file_stat.st_size);
 	ft_putchar('\t');
 	putdate(file_stat.st_mtime);
 	ft_putchar('\t');
