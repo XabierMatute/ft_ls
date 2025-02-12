@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/02 14:41:52 by xmatute-          #+#    #+#              #
-#    Updated: 2024/09/24 19:25:50 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/10/21 19:57:43 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,16 @@ NAME := ft_ls
 
 SRC :=	main.c \
 		ft_ls.c \
+		purge_paths.c \
+		sort_paths.c \
+		list_paths.c \
+		list_files.c \
+		list_directories.c \
+		save_calloc.c \
+		isdir.c \
+		put_file.c \
+		get_files.c \
+		save_closedir.c \
 
 INC_DIR = ./includes
 

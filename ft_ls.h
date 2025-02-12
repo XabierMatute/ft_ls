@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 11:41:00 by xmatute-          #+#    #+#             */
-/*   Updated: 2024/10/14 15:40:49 by xmatute-         ###   ########.fr       */
+/*   Updated: 2024/12/05 14:29:30 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,22 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-int ft_ls(char **path, const t_flags flags);
-int list_directory(char *path, const t_flags flags);
+int 	ft_ls(char const**path, const t_flags flags);
+char **purge_paths(char const **paths);
+void *save_calloc(size_t nmemb, size_t size);
+
+char **sort_paths(char **files, const t_flags flags);
+int	list_paths(char **paths, const t_flags flags);
+int list_files(char **paths, const t_flags flags);
+int list_only_files(char **paths, const t_flags flags);
+int list_directories(char **paths, const t_flags flags);
+int isdir(const char *path);
+void put_file(const char *path, const t_flags flags);
+char **get_files(const char *path, const t_flags flags);
+void save_closedir(const char *path, DIR *dir);
+
+#ifndef DEBUG
+#define DEBUG 0
+#endif // DEBUG
 
 #endif //FT_LS_H

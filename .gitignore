@@ -61,3 +61,6 @@ ft_ls
 archivo.txt
 gpc.c
 printfileinfo.c
+log*
+llog*
+*copy*
