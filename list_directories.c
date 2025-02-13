@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 17:29:00 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/12 20:58:21 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/13 12:28:27 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,21 +44,11 @@ char **make_absolute_paths(char **files, const char *dir_path)
     return files;
 }
 
-int recursive_ls(char **files, const t_flags flags, char *path)
-{
-	list_paths(files, flags, path);
-    return (0);
-}
-
-int list_directory(char *path, const t_flags flags, char *dir_path)
+int recursive_ls(char *path, const t_flags flags, char *dir_path)
 {
 	errno = 0;
-	valid_file_func valid_file = all_files;
+	valid_file_func valid_file = not_dot;
 	if (!flags.a)
-		valid_file = not_dot;
-	if (flags.R)
-		valid_file = not_ocult;
-	if (flags.R && !flags.a)
 		valid_file = not_dot_not_ocult;
 	char **files = get_files(path, dir_path, valid_file);
 	char *absolute_path = make_absolute_path(dir_path, path);
@@ -67,13 +57,62 @@ int list_directory(char *path, const t_flags flags, char *dir_path)
 		return (errno);
 
 	files = sort_paths(files, flags, absolute_path);
-	if (flags.R)
-        recursive_ls(files, flags, absolute_path);
-	else
-    	list_files(files, flags, absolute_path);
+
+   	list_directories(files, flags, absolute_path);
 
 	free2((void **)files);
 	free(absolute_path);
+	return (0);
+}
+
+// int list_directory(char *path, const t_flags flags, char *dir_path)
+// {
+// 	errno = 0;
+// 	valid_file_func valid_file = all_files;
+// 	if (!flags.a)
+// 		valid_file = not_ocult;
+// 	if (flags.R)
+// 		valid_file = not_dot;
+// 	if (flags.R && !flags.a)
+// 		valid_file = not_dot_not_ocult;
+// 	char **files = get_files(path, dir_path, valid_file);
+// 	char *absolute_path = make_absolute_path(dir_path, path);
+
+// 	if (!files || errno)
+// 		return (errno);
+
+// 	files = sort_paths(files, flags, absolute_path);
+// 	if (flags.R)
+//         recursive_ls(files, flags, absolute_path);
+// 	else
+//     	list_files(files, flags, absolute_path);
+
+// 	free2((void **)files);
+// 	free(absolute_path);
+// 	return (0);
+// }
+
+int list_directory(char *path, const t_flags flags, char *dir_path)
+{
+	errno = 0;
+	valid_file_func valid_file = all_files;
+	if (!flags.a)
+		valid_file = not_ocult;
+	char **files = get_files(path, dir_path, valid_file);
+	char *absolute_path = make_absolute_path(dir_path, path);
+
+	if (!files || errno)
+		return (errno);
+
+	files = sort_paths(files, flags, absolute_path);
+
+   	list_files(files, flags, absolute_path);
+	ft_putchar('\n');
+
+	free2((void **)files);
+	free(absolute_path);
+	if (flags.R)
+        recursive_ls(path, flags, dir_path);
 	return (0);
 }
 
