@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 17:29:00 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/13 12:28:27 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/13 12:52:40 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,11 @@ int list_directory(char *path, const t_flags flags, char *dir_path)
 	if (!flags.a)
 		valid_file = not_ocult;
 	char **files = get_files(path, dir_path, valid_file);
-	char *absolute_path = make_absolute_path(dir_path, path);
 
 	if (!files || errno)
 		return (errno);
+
+	char *absolute_path = make_absolute_path(dir_path, path);
 
 	files = sort_paths(files, flags, absolute_path);
 

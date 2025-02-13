@@ -6,7 +6,7 @@
 /*   By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 19:32:26 by xmatute-          #+#    #+#             */
-/*   Updated: 2025/02/13 11:51:43 by xmatute-         ###   ########.fr       */
+/*   Updated: 2025/02/13 12:50:30 by xmatute-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,10 @@ static char **get_files_from(const char *path, valid_file_func valid_file)
 	size_t			i = 0;
 
 	if (errno)
+	{
+		free(files);
 		return (NULL);
+	}
 	if (!dir)
 	{
 		ft_eprintf("(get_files)ft_ls: cannot access '%s': %s\n", path, strerror(errno));
